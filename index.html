@@ -241,9 +241,7 @@
       <td><div class="proj-name">${p.name}</div><div class="proj-id">${p.id}</div></td>
       <td><span class="status-badge ${statusBadgeClass(p.status)}">${p.status}</span></td>
       <td>${p.type}</td>
-      <td>${p.am}</td>
       <td class="num">${fmt$(p.budget)}</td>
-      <td class="num">${fmt$(p.billed)}</td>
     </tr>`;
   }
 
@@ -313,8 +311,8 @@
         <p class="card-sub">In-progress and on-hold projects currently drawing against the budget.</p>
         <table>
           <thead><tr>
-            <th>Project</th><th>Status</th><th>Type</th><th>Account Manager</th>
-            <th class="num">Budget</th><th class="num">Billed to Date</th>
+            <th>Project</th><th>Status</th><th>Type</th>
+            <th class="num">Budget</th>
           </tr></thead>
           <tbody id="activeBody"></tbody>
         </table>
@@ -337,8 +335,8 @@
         <p class="card-sub">Projects remain visible here after closing — their budget stays counted in the burn down.</p>
         <table>
           <thead><tr>
-            <th>Project</th><th>Status</th><th>Type</th><th>Account Manager</th>
-            <th class="num">Budget</th><th class="num">Billed to Date</th>
+            <th>Project</th><th>Status</th><th>Type</th>
+            <th class="num">Budget</th>
           </tr></thead>
           <tbody id="completedBody"></tbody>
         </table>
@@ -437,10 +435,10 @@
     document.getElementById('completedCount').textContent = completed.length;
     document.getElementById('activeBody').innerHTML = active.length
       ? active.map(renderRow).join('')
-      : '<tr><td colspan="6" class="empty-note">No active projects.</td></tr>';
+      : '<tr><td colspan="4" class="empty-note">No active projects.</td></tr>';
     document.getElementById('completedBody').innerHTML = completed.length
       ? completed.map(renderRow).join('')
-      : '<tr><td colspan="6" class="empty-note">No completed projects yet.</td></tr>';
+      : '<tr><td colspan="4" class="empty-note">No completed projects yet.</td></tr>';
 
     document.getElementById('addedValueCount').textContent = addedValue.length;
     document.getElementById('addedValueBody').innerHTML = addedValue.length
@@ -448,7 +446,7 @@
           <div class="av-row" style="${i > 0 ? 'margin-top:14px;padding-top:14px;border-top:1px solid var(--border);' : ''}">
             <div>
               <div class="proj-name" style="font-size:15px;">${p.name}</div>
-              <div style="font-size:12px;color:var(--text-secondary);margin-top:2px;">${p.type} &nbsp;·&nbsp; ${p.id} &nbsp;·&nbsp; ${p.am}</div>
+              <div style="font-size:12px;color:var(--text-secondary);margin-top:2px;">${p.type} &nbsp;·&nbsp; ${p.id}</div>
               <div style="font-size:12px;color:var(--text-muted);margin-top:6px;">Status: <span class="status-badge ${statusBadgeClass(p.status)}">${p.status}</span></div>
             </div>
             <div style="text-align:right;">
