@@ -1,0 +1,66 @@
+{
+  "campaign": "2026 UCM Service Lines Campaigns",
+  "totalBudget": 1865000,
+  "scopeEnd": "2027-06-30",
+  "lastUpdated": "2026-08-18",
+  "projects": [
+    {
+      "id": "26-UCMC-034",
+      "name": "UChicago Service Lines - Media Transition & Campaign Builds",
+      "type": "Creative: Concepting",
+      "status": "Complete/Expenses Pending",
+      "am": "Courtney Fetters",
+      "budget": 108770.0,
+      "billed": 0.0,
+      "lifecycle": "active",
+      "addedValue": true
+    },
+    {
+      "id": "26-UCMC-052",
+      "name": "UChicago Service Lines - Analytics & Reporting",
+      "type": "Media: Reporting",
+      "status": "In Progress",
+      "am": "Courtney Fetters",
+      "budget": 341500.0,
+      "billed": 13338.75,
+      "lifecycle": "active",
+      "addedValue": false
+    },
+    {
+      "id": "26-UCMC-058",
+      "name": "UChicago Service Lines - Account Oversight & Advisory",
+      "type": "Oversight: Account",
+      "status": "In Progress",
+      "am": "Courtney Fetters",
+      "budget": 154200.0,
+      "billed": 12850.0,
+      "lifecycle": "active",
+      "addedValue": false
+    },
+    {
+      "id": "26-UCMC-061",
+      "name": "UChicago Service Lines - Market Assessment Tool Trial",
+      "type": "Analytics: Reporting",
+      "status": "New / In Estimating",
+      "am": "Courtney Fetters",
+      "budget": 0.0,
+      "billed": 0.0,
+      "lifecycle": "active",
+      "addedValue": true
+    },
+    {
+      "id": "26-UCMC-066",
+      "name": "UChicago Service Lines - Digestive Diseases and Transplant - Media Plan",
+      "type": "Media: Planning",
+      "status": "In Progress",
+      "am": "Courtney Fetters",
+      "budget": 15000.0,
+      "billed": 0.0,
+      "lifecycle": "active",
+      "addedValue": true
+    }
+  ],
+  "excludedCount": 25,
+  "excludedBudget": 422660.0,
+  "warnings": []
+}
