@@ -1,3 +1,4 @@
+2026 08 18 · JSON
 {
   "campaign": "2026 UCM Service Lines Campaigns",
   "totalBudget": 1865000,
@@ -10,8 +11,8 @@
       "type": "Creative: Concepting",
       "status": "Complete/Expenses Pending",
       "am": "Courtney Fetters",
-      "budget": 108770.0,
-      "billed": 0.0,
+      "budget": 108770,
+      "billed": 0,
       "lifecycle": "active",
       "addedValue": true
     },
@@ -21,7 +22,7 @@
       "type": "Media: Reporting",
       "status": "In Progress",
       "am": "Courtney Fetters",
-      "budget": 341500.0,
+      "budget": 341500,
       "billed": 13338.75,
       "lifecycle": "active",
       "addedValue": false
@@ -32,8 +33,8 @@
       "type": "Oversight: Account",
       "status": "In Progress",
       "am": "Courtney Fetters",
-      "budget": 154200.0,
-      "billed": 12850.0,
+      "budget": 154200,
+      "billed": 12850,
       "lifecycle": "active",
       "addedValue": false
     },
@@ -43,8 +44,8 @@
       "type": "Analytics: Reporting",
       "status": "New / In Estimating",
       "am": "Courtney Fetters",
-      "budget": 0.0,
-      "billed": 0.0,
+      "budget": 0,
+      "billed": 0,
       "lifecycle": "active",
       "addedValue": true
     },
@@ -54,13 +55,15 @@
       "type": "Media: Planning",
       "status": "In Progress",
       "am": "Courtney Fetters",
-      "budget": 15000.0,
-      "billed": 0.0,
+      "budget": 15000,
+      "billed": 0,
       "lifecycle": "active",
       "addedValue": true
     }
   ],
   "excludedCount": 25,
-  "excludedBudget": 422660.0,
+  "excludedBudget": 422660,
   "warnings": []
 }
+
+
