@@ -121,6 +121,27 @@
   }
   .theme-toggle:hover { color: var(--text-primary); }
 
+  .top-bar-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .version-select {
+    border: 1px solid var(--border); background: var(--surface-1); color: var(--text-secondary);
+    border-radius: 8px; padding: 6px 10px; font-size: 12px; cursor: pointer; max-width: 240px;
+  }
+  .version-select:hover { color: var(--text-primary); }
+
+  .version-banner {
+    background: color-mix(in srgb, var(--status-warning) 16%, var(--surface-1));
+    border: 1px solid color-mix(in srgb, var(--status-warning) 50%, transparent);
+    border-radius: 10px; padding: 12px 16px; margin-bottom: 20px; font-size: 13px; color: var(--text-secondary);
+    display: none; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  }
+  .version-banner.show { display: flex; }
+  .version-banner b { color: var(--text-primary); }
+  .version-banner button {
+    border: 1px solid var(--border); background: var(--surface-1); color: var(--text-primary);
+    border-radius: 8px; padding: 6px 12px; font-size: 12px; cursor: pointer; font-weight: 600; white-space: nowrap;
+  }
+  .version-banner button:hover { background: var(--page-plane); }
+
   .meta-row { display: flex; gap: 20px; flex-wrap: wrap; font-size: 12px; color: var(--text-muted); margin-bottom: 28px; }
   .meta-row span b { color: var(--text-secondary); font-weight: 600; }
 
@@ -252,7 +273,15 @@
           <h1>UCM Service Lines — Client Budget Burn Down</h1>
           <p class="sub">Campaign: <b id="campaignName">—</b> &nbsp;·&nbsp; Client: <b>UChicago Medicine (UCMC)</b></p>
         </div>
-        <button class="theme-toggle" id="themeToggle" type="button">Dark mode</button>
+        <div class="top-bar-actions">
+          <select class="version-select" id="versionSelect" style="display:none;"></select>
+          <button class="theme-toggle" id="themeToggle" type="button">Dark mode</button>
+        </div>
+      </div>
+
+      <div class="version-banner" id="versionBanner">
+        <span>Viewing a previous version: <b id="versionBannerLabel"></b> — numbers below are from that date, not today.</span>
+        <button id="versionReturnBtn" type="button">Return to current</button>
       </div>
 
       <div class="warn-banner" id="warnBanner">
@@ -458,6 +487,42 @@
     document.getElementById('addedValueTotal').textContent = fmt$(addedValue.reduce((s, p) => s + (p.budget || 0), 0));
   }
 
+  let VERSIONS = [];
+
+  function populateVersionSelect() {
+    const select = document.getElementById('versionSelect');
+    if (!VERSIONS.length) { select.style.display = 'none'; return; }
+    select.style.display = '';
+    select.innerHTML = VERSIONS.map(v =>
+      `<option value="${v.id}">${v.label}${v.current ? ' (current)' : ''}</option>`
+    ).join('');
+    const current = VERSIONS.find(v => v.current) || VERSIONS[0];
+    select.value = current.id;
+    select.onchange = () => {
+      const entry = VERSIONS.find(v => v.id === select.value);
+      if (entry) loadVersion(entry);
+    };
+  }
+
+  async function loadVersion(entry) {
+    try {
+      const res = await fetch('./' + entry.file, { cache: 'no-store' });
+      if (!res.ok) throw new Error(`${entry.file} returned ${res.status}`);
+      const cfg = await res.json();
+      render(cfg);
+      const banner = document.getElementById('versionBanner');
+      if (entry.current) {
+        banner.classList.remove('show');
+      } else {
+        banner.classList.add('show');
+        document.getElementById('versionBannerLabel').textContent = entry.label;
+      }
+      document.getElementById('versionSelect').value = entry.id;
+    } catch (err) {
+      alert(`Couldn't load that version (${err.message}).`);
+    }
+  }
+
   async function init() {
     try {
       const res = await fetch('./data.json', { cache: 'no-store' });
@@ -465,6 +530,27 @@
       const cfg = await res.json();
       buildShell();
       render(cfg);
+
+      document.getElementById('versionReturnBtn').addEventListener('click', () => {
+        const current = VERSIONS.find(v => v.current);
+        if (current) loadVersion(current);
+      });
+
+      // Version history is optional — a fresh deploy or a repo that hasn't
+      // had its first automated run yet simply won't have this file, and
+      // the dropdown stays hidden until it does.
+      try {
+        const manifestRes = await fetch('./data/history/manifest.json', { cache: 'no-store' });
+        if (manifestRes.ok) {
+          const manifest = await manifestRes.json();
+          if (manifest.versions && manifest.versions.length) {
+            VERSIONS = manifest.versions;
+            populateVersionSelect();
+          }
+        }
+      } catch (e) {
+        // No version history yet — non-fatal, dropdown just stays hidden.
+      }
     } catch (err) {
       document.getElementById('contentPad').innerHTML = `
         <div class="load-state">
