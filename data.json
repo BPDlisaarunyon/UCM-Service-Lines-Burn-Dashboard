@@ -50,15 +50,6 @@
       "addedValue": true
     },
     {
-      "id": "26-UCMC-062",
-      "name": "UChicago Strategic Communications - OOP Expenses",
-      "type": "Oversight: OOP Expenses Only",
-      "status": "In Progress",
-      "budget": 0.0,
-      "lifecycle": "active",
-      "addedValue": false
-    },
-    {
       "id": "26-UCMC-066",
       "name": "UChicago Service Lines - Digestive Diseases and Transplant - Media Plan",
       "type": "Media: Planning",
@@ -66,135 +57,9 @@
       "budget": 15000.0,
       "lifecycle": "active",
       "addedValue": true
-    },
-    {
-      "id": "26-UCMC-999",
-      "name": "UChicago NB Client Admin",
-      "type": "zNB Client Admin",
-      "status": "In Progress",
-      "budget": 0.0,
-      "lifecycle": "active",
-      "addedValue": false
-    },
-    {
-      "id": "Oppty-0870",
-      "name": "Brand Campaign Execution & Launch",
-      "type": "zNB Existing Client Proposal/Opportunity",
-      "status": "Completed",
-      "budget": 0.0,
-      "lifecycle": "completed",
-      "addedValue": false
-    },
-    {
-      "id": "Oppty-344",
-      "name": "UChicago Medicine Brand Strategy",
-      "type": "zNB New Business Proposal/Opportunity",
-      "status": "Completed",
-      "budget": 0.0,
-      "lifecycle": "completed",
-      "addedValue": false
-    },
-    {
-      "id": "Oppty-569",
-      "name": "UChicago Medicine - Comms Support",
-      "type": "zNB Existing Client Proposal/Opportunity",
-      "status": "Completed",
-      "budget": 0.0,
-      "lifecycle": "completed",
-      "addedValue": false
-    },
-    {
-      "id": "Oppty-571",
-      "name": "UChicago Communications AOR",
-      "type": "zNB New Business Proposal/Opportunity",
-      "status": "Completed",
-      "budget": 0.0,
-      "lifecycle": "completed",
-      "addedValue": false
-    },
-    {
-      "id": "Oppty-574",
-      "name": "Brand Positioning Manifesto Video",
-      "type": "zNB Existing Client Proposal/Opportunity",
-      "status": "Completed",
-      "budget": 0.0,
-      "lifecycle": "completed",
-      "addedValue": false
-    },
-    {
-      "id": "Oppty-613",
-      "name": "UChicago AOR",
-      "type": "zNB New Business Proposal/Opportunity",
-      "status": "Completed",
-      "budget": 660.0,
-      "lifecycle": "completed",
-      "addedValue": false
-    },
-    {
-      "id": "Oppty-662",
-      "name": "UChicago Medicine \u2013 Payor Negotiation Support",
-      "type": "zNB Existing Client Proposal/Opportunity",
-      "status": "Completed",
-      "budget": 0.0,
-      "lifecycle": "completed",
-      "addedValue": false
-    },
-    {
-      "id": "Oppty-761",
-      "name": "F1 Ideation",
-      "type": "zNB Existing Client Proposal/Opportunity",
-      "status": "Completed",
-      "budget": 0.0,
-      "lifecycle": "completed",
-      "addedValue": false
-    },
-    {
-      "id": "Oppty-762",
-      "name": "Cancer Pavilion Plan",
-      "type": "zNB Existing Client Proposal/Opportunity",
-      "status": "Completed",
-      "budget": 0.0,
-      "lifecycle": "completed",
-      "addedValue": false
-    },
-    {
-      "id": "Oppty-774",
-      "name": "UChicago Service Lines",
-      "type": "zNB Existing Client Proposal/Opportunity",
-      "status": "Completed",
-      "budget": 0.0,
-      "lifecycle": "completed",
-      "addedValue": false
-    },
-    {
-      "id": "Oppty-841",
-      "name": "UChicago Cancer Pavilion RFP",
-      "type": "zNB Existing Client Proposal/Opportunity",
-      "status": "Completed",
-      "budget": 0.0,
-      "lifecycle": "completed",
-      "addedValue": false
-    },
-    {
-      "id": "Oppty-863",
-      "name": "UChicago Moonshot - Medicare Campaign",
-      "type": "zNB Existing Client Proposal/Opportunity",
-      "status": "Opportunity",
-      "budget": 0.0,
-      "lifecycle": "active",
-      "addedValue": false
-    },
-    {
-      "id": "Oppty-865",
-      "name": "UChicago National Reputation Campaign - Conference Support",
-      "type": "zNB Existing Client Proposal/Opportunity",
-      "status": "Completed",
-      "budget": 0.0,
-      "lifecycle": "completed",
-      "addedValue": false
     }
   ],
-  "excludedCount": 9,
-  "excludedBudget": 334000.0,
+  "excludedCount": 24,
+  "excludedBudget": 334660.0,
   "warnings": []
 }
