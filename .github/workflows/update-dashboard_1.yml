@@ -27,7 +27,7 @@ jobs:
         run: pip install openpyxl
 
       - name: Parse Excel into dashboard data.json
-        run: python scripts/parse_projects.py data/All_Projects.xlsx data.json
+        run: python script/parse_projects.py data/All_Projects.xlsx data.json
 
       - name: Commit updated data.json and version history
         run: |
