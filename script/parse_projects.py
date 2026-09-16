@@ -18,18 +18,21 @@ of rules maintained right here in this script, checked in this order:
      These don't change often; if BPD delivers a new added-value project,
      add its project number to this set.
 
-  2. Admin/overhead rows — any project number containing "999" (the
+  2. FIXED_EXCLUDE_IDS — a fixed list of project numbers that are always
+     excluded, full stop, for cases nothing else here would catch.
+
+  3. Admin/overhead rows — any project number containing "999" (the
      agency's convention for internal/admin project numbers) is excluded.
 
-  3. Expense-only rows — any project whose "Project Type" contains the
+  4. Expense-only rows — any project whose "Project Type" contains the
      word "expense", or whose "Project Status" is "Expenses Only", is
      excluded (not just "Media: Expense" — any expense type).
 
-  4. Opportunity/pipeline rows — any project whose "Project Status" or
+  5. Opportunity/pipeline rows — any project whose "Project Status" or
      "Project Type" contains "opportunity" or "oppty" is excluded (not
      yet real, contracted work).
 
-  5. EXCLUDE_TYPES — any remaining project whose "Project Type" exactly
+  6. EXCLUDE_TYPES — any remaining project whose "Project Type" exactly
      matches one of these (case-insensitive) is excluded, e.g. media
      labor/management fees that don't count as agency burn.
 
@@ -69,6 +72,16 @@ FIXED_ADDED_VALUE_IDS = {
     "26-UCMC-034",  # Media Transition & Campaign Builds
     "26-UCMC-061",  # Market Assessment Tool Trial
     "26-UCMC-066",  # Digestive Diseases and Transplant - Media Plan
+}
+
+# Project numbers that are always excluded, full stop — for cases that
+# don't fit any of the type/status/number rules below. These are rows a
+# human has specifically determined don't belong on this dashboard even
+# though nothing about their text flags them automatically.
+FIXED_EXCLUDE_IDS = {
+    "26-UCMC-035",  # Conference Support — a different initiative (National
+                     # Reputation Campaign), not Service Lines budget, even
+                     # though it lands under this campaign in the export.
 }
 
 # Project Type values (case-insensitive, exact match) that are excluded
@@ -148,6 +161,9 @@ def classify(proj_num, proj_type, status):
     """Returns one of: 'active', 'completed', 'added_value', 'exclude'."""
     if proj_num in FIXED_ADDED_VALUE_IDS:
         return "added_value"
+
+    if proj_num in FIXED_EXCLUDE_IDS:
+        return "exclude"
 
     proj_num_key = proj_num or ""
     type_key = (proj_type or "").strip().lower()
