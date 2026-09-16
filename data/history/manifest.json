@@ -1,0 +1,22 @@
+{
+  "versions": [
+    {
+      "id": "manifest_1",
+      "label": "manifest_1",
+      "file": "data.json",
+      "current": true
+    },
+    {
+      "id": "2026-09-16",
+      "label": "September 16, 2026",
+      "file": "data/history/2026-09-16.json",
+      "current": false
+    },
+    {
+      "id": "2026-08-18_1",
+      "label": "2026-08-18_1",
+      "file": "data/history/2026-08-18_1.json",
+      "current": false
+    }
+  ]
+}
