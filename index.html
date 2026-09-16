@@ -122,11 +122,32 @@
   .theme-toggle:hover { color: var(--text-primary); }
 
   .top-bar-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-  .version-select {
+
+  .last-updated-wrap { position: relative; display: inline-flex; align-items: center; gap: 6px; }
+  .cal-btn {
     border: 1px solid var(--border); background: var(--surface-1); color: var(--text-secondary);
-    border-radius: 8px; padding: 6px 10px; font-size: 12px; cursor: pointer; max-width: 240px;
+    border-radius: 6px; width: 22px; height: 22px; font-size: 12px; cursor: pointer; padding: 0;
+    display: inline-flex; align-items: center; justify-content: center; line-height: 1;
   }
-  .version-select:hover { color: var(--text-primary); }
+  .cal-btn:hover { color: var(--text-primary); background: var(--page-plane); }
+  .cal-popover {
+    position: absolute; top: calc(100% + 6px); left: 0; z-index: 20; min-width: 230px; max-height: 260px;
+    overflow-y: auto; background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.18); padding: 8px;
+  }
+  .cal-popover[hidden] { display: none; }
+  .cal-popover-title { font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); padding: 4px 8px 8px; }
+  .cal-popover-list { display: flex; flex-direction: column; gap: 2px; }
+  .cal-item {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%;
+    text-align: left; background: none; border: none; border-radius: 6px; padding: 7px 8px; font-size: 13px;
+    color: var(--text-primary); cursor: pointer; font-family: inherit;
+  }
+  .cal-item:hover { background: var(--page-plane); }
+  .cal-item.active { background: color-mix(in srgb, var(--series-1) 12%, transparent); font-weight: 600; }
+  .cal-item .cal-item-tag {
+    font-size: 10px; text-transform: uppercase; letter-spacing: .03em; color: var(--text-muted); white-space: nowrap;
+  }
 
   .version-banner {
     background: color-mix(in srgb, var(--status-warning) 16%, var(--surface-1));
@@ -145,7 +166,7 @@
   .meta-row { display: flex; gap: 20px; flex-wrap: wrap; font-size: 12px; color: var(--text-muted); margin-bottom: 28px; }
   .meta-row span b { color: var(--text-secondary); font-weight: 600; }
 
-  .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 28px; }
+  .tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 28px; }
   @media (max-width: 860px) { .tiles { grid-template-columns: repeat(2, 1fr); } }
   .tile {
     background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px;
@@ -274,7 +295,6 @@
           <p class="sub">Campaign: <b id="campaignName">—</b> &nbsp;·&nbsp; Client: <b>UChicago Medicine (UCMC)</b></p>
         </div>
         <div class="top-bar-actions">
-          <select class="version-select" id="versionSelect" style="display:none;"></select>
           <button class="theme-toggle" id="themeToggle" type="button">Dark mode</button>
         </div>
       </div>
@@ -290,9 +310,16 @@
       </div>
 
       <div class="meta-row">
-        <span>Last updated: <b id="lastUpdated"></b></span>
+        <span class="last-updated-wrap">
+          Last updated: <b id="lastUpdated"></b>
+          <button class="cal-btn" id="calBtn" type="button" style="display:none;" title="View a previous version" aria-label="View a previous version">📅</button>
+          <div class="cal-popover" id="calPopover" hidden>
+            <div class="cal-popover-title">Previous versions</div>
+            <div class="cal-popover-list" id="calList"></div>
+          </div>
+        </span>
         <span>Scope end: <b id="scopeEnd"></b></span>
-        <span>Data source: <b>All Projects export</b></span>
+        <span>Data source: <b>Projects Report</b></span>
         <span id="asOfDays"></span>
       </div>
 
@@ -311,11 +338,6 @@
           <div class="label">Remaining Budget</div>
           <div class="value" id="tileRemaining">$0</div>
           <div class="note" id="tileRemainingPct">0% of total</div>
-        </div>
-        <div class="tile">
-          <div class="label">Run-Rate to Fully Use by Scope End</div>
-          <div class="value" id="tileRunRate">$0<span style="font-size:13px;font-weight:600;color:var(--text-secondary);">/wk</span></div>
-          <div class="note" id="tileRunRateNote">based on weeks remaining</div>
         </div>
       </div>
 
@@ -372,9 +394,9 @@
       </div>
 
       <div class="card foot-card footnote">
-        <b>Scope of this dashboard:</b> pulls only the campaign named above from the weekly projects export, using each project's Current Total Budget. Which bucket a project falls into — Active, Completed, Added Value, or excluded entirely (media buys/labor, sales-pipeline records, zero-budget admin rows) — is set by the <code>Dashboard Bucket</code> column in the source spreadsheet, not guessed from the project type. <span id="excludedNote"></span>
+        <b>Scope of this dashboard:</b> pulls only the campaign named above from the daily Projects Report export, using each project's Current Total Budget. Which bucket a project falls into — Active, Completed, Added Value, or excluded entirely (media buys/labor, zero-budget admin rows) — is set by rules built into the dashboard's update script, based on project type and ID. <span id="excludedNote"></span>
         <br><br>
-        <b>This dashboard updates itself:</b> the weekly Excel export is routed by Zapier into this repository, a GitHub Action re-reads it and rebuilds <code>data.json</code>, and this page re-fetches that file on every load. Nothing here needs manual edits — classification changes happen in the spreadsheet's Dashboard Bucket column.
+        <b>This dashboard updates itself:</b> the daily Projects Report export is routed by Zapier into this repository, a GitHub Action re-reads it and rebuilds <code>data.json</code>, and this page re-fetches that file on every load. Nothing here needs manual edits.
       </div>
     `;
     document.getElementById('themeToggle').addEventListener('click', () => {
@@ -397,7 +419,7 @@
       const banner = document.getElementById('warnBanner');
       banner.classList.add('show');
       document.getElementById('warnHeadline').textContent =
-        `${cfg.warnings.length} row(s) in this campaign need a Dashboard Bucket value and were left off this dashboard:`;
+        `${cfg.warnings.length} row(s) in this campaign couldn't be classified and were left off this dashboard:`;
       document.getElementById('warnList').innerHTML = cfg.warnings.map(w => `<li>${w}</li>`).join('');
     }
 
@@ -424,7 +446,7 @@
 
     document.getElementById('meterFill').style.width = Math.min(100, Math.max(0, pctAllocated)) + '%';
     document.getElementById('meterAllocatedLabel').textContent = fmt$(allocated) + ' (' + fmtPct(pctAllocated) + ')';
-    document.getElementById('meterRemainingLabel').textContent = fmt$(remaining);
+    document.getElementById('meterRemainingLabel').textContent = fmt$(remaining) + ' (' + fmtPct(pctRemaining) + ')';
     document.getElementById('meterTotalLabel').textContent = fmt$(TOTAL_BUDGET);
 
     const now = new Date();
@@ -432,17 +454,12 @@
     const msPerDay = 1000 * 60 * 60 * 24;
     const daysRemaining = Math.max(0, Math.round((end - now) / msPerDay));
     const weeksRemaining = daysRemaining / 7;
-    const monthsRemaining = daysRemaining / 30.44;
 
     document.getElementById('scopeEnd').textContent = end.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
     document.getElementById('lastUpdated').textContent = new Date(LAST_UPDATED + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
     document.getElementById('asOfDays').innerHTML = daysRemaining > 0
       ? `<b>${daysRemaining.toLocaleString()}</b> days (~${Math.round(weeksRemaining)} wks) remaining in scope`
       : `<b>Scope end reached</b>`;
-
-    const weeklyRunRate = weeksRemaining > 0 ? remaining / weeksRemaining : remaining;
-    document.getElementById('tileRunRate').innerHTML = fmt$(weeklyRunRate) + '<span style="font-size:13px;font-weight:600;color:var(--text-secondary);">/wk</span>';
-    document.getElementById('tileRunRateNote').textContent = `≈ ${fmt$(remaining / (monthsRemaining || 1))}/mo to fully allocate by scope end`;
 
     const paceBadge = document.getElementById('paceBadge');
     const paceText = document.getElementById('paceText');
@@ -488,20 +505,31 @@
   }
 
   let VERSIONS = [];
+  let ACTIVE_VERSION_ID = null;
 
-  function populateVersionSelect() {
-    const select = document.getElementById('versionSelect');
-    if (!VERSIONS.length) { select.style.display = 'none'; return; }
-    select.style.display = '';
-    select.innerHTML = VERSIONS.map(v =>
-      `<option value="${v.id}">${v.label}${v.current ? ' (current)' : ''}</option>`
-    ).join('');
-    const current = VERSIONS.find(v => v.current) || VERSIONS[0];
-    select.value = current.id;
-    select.onchange = () => {
-      const entry = VERSIONS.find(v => v.id === select.value);
-      if (entry) loadVersion(entry);
-    };
+  function populateCalendar() {
+    const btn = document.getElementById('calBtn');
+    if (!VERSIONS.length) { btn.style.display = 'none'; return; }
+    btn.style.display = '';
+    renderCalList();
+  }
+
+  function renderCalList() {
+    const list = document.getElementById('calList');
+    list.innerHTML = VERSIONS.map(v => `
+      <button type="button" class="cal-item${v.id === ACTIVE_VERSION_ID ? ' active' : ''}" data-id="${v.id}">
+        <span>${v.label}</span>
+        ${v.current ? '<span class="cal-item-tag">Current</span>' : ''}
+      </button>`).join('');
+    list.querySelectorAll('.cal-item').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const entry = VERSIONS.find(v => v.id === btn.dataset.id);
+        if (entry) {
+          loadVersion(entry);
+          document.getElementById('calPopover').hidden = true;
+        }
+      });
+    });
   }
 
   async function loadVersion(entry) {
@@ -517,7 +545,8 @@
         banner.classList.add('show');
         document.getElementById('versionBannerLabel').textContent = entry.label;
       }
-      document.getElementById('versionSelect').value = entry.id;
+      ACTIVE_VERSION_ID = entry.id;
+      renderCalList();
     } catch (err) {
       alert(`Couldn't load that version (${err.message}).`);
     }
@@ -536,20 +565,34 @@
         if (current) loadVersion(current);
       });
 
+      const calBtn = document.getElementById('calBtn');
+      const calPopover = document.getElementById('calPopover');
+      calBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        calPopover.hidden = !calPopover.hidden;
+      });
+      document.addEventListener('click', (e) => {
+        if (!calPopover.hidden && !calPopover.contains(e.target) && e.target !== calBtn) {
+          calPopover.hidden = true;
+        }
+      });
+
       // Version history is optional — a fresh deploy or a repo that hasn't
       // had its first automated run yet simply won't have this file, and
-      // the dropdown stays hidden until it does.
+      // the calendar button stays hidden until it does.
       try {
         const manifestRes = await fetch('./data/history/manifest.json', { cache: 'no-store' });
         if (manifestRes.ok) {
           const manifest = await manifestRes.json();
           if (manifest.versions && manifest.versions.length) {
             VERSIONS = manifest.versions;
-            populateVersionSelect();
+            const current = VERSIONS.find(v => v.current);
+            ACTIVE_VERSION_ID = current ? current.id : null;
+            populateCalendar();
           }
         }
       } catch (e) {
-        // No version history yet — non-fatal, dropdown just stays hidden.
+        // No version history yet — non-fatal, calendar button just stays hidden.
       }
     } catch (err) {
       document.getElementById('contentPad').innerHTML = `
