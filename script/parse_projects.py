@@ -9,26 +9,41 @@ Usage:
 How classification works
 -------------------------
 Business judgment (is a project real "burn" against the client budget, an
-added-value freebie, or excluded entirely as media/pipeline noise) is NOT
-inferred from free-text alone. It's driven by two small, explicit rules
-maintained right here in this script:
+added-value freebie, or excluded entirely as pipeline/admin/expense noise)
+is NOT inferred from free-text alone. It's driven by a small, explicit set
+of rules maintained right here in this script, checked in this order:
 
   1. FIXED_ADDED_VALUE_IDS — a fixed allowlist of project numbers that are
      always "Added Value" (shown separately, excluded from the burn).
      These don't change often; if BPD delivers a new added-value project,
      add its project number to this set.
 
-  2. EXCLUDE_TYPES — any project whose "Project Type" exactly matches one
-     of these (case-insensitive) is left off the dashboard entirely, e.g.
-     media buys/labor that don't count as agency burn against this budget.
+  2. Admin/overhead rows — any project number containing "999" (the
+     agency's convention for internal/admin project numbers) is excluded.
+
+  3. Expense-only rows — any project whose "Project Type" contains the
+     word "expense", or whose "Project Status" is "Expenses Only", is
+     excluded (not just "Media: Expense" — any expense type).
+
+  4. Opportunity/pipeline rows — any project whose "Project Status" or
+     "Project Type" contains "opportunity" or "oppty" is excluded (not
+     yet real, contracted work).
+
+  5. EXCLUDE_TYPES — any remaining project whose "Project Type" exactly
+     matches one of these (case-insensitive) is excluded, e.g. media
+     labor/management fees that don't count as agency burn.
 
 Everything else in the target campaign counts as real burn: "Active" by
-default, or "Completed" if its status text contains "complete".
+default, or "Completed" if its status text contains "complete". Because
+this script only ever reads today's spreadsheet (it never merges in
+projects from a previous day), "Completed Projects" on the dashboard is
+always exactly what's marked complete in the current Projects Report —
+nothing lingers from an earlier export once it drops off the list.
 
 This replaces the older "Dashboard Bucket" spreadsheet-column approach —
 the new report format doesn't include that column. If the classification
-rule ever needs to change (a new added-value project, a new type to
-exclude, etc.), update FIXED_ADDED_VALUE_IDS / EXCLUDE_TYPES below.
+rule ever needs to change (a new added-value project, a new type/status
+to exclude, etc.), update the rules below.
 """
 import sys
 import os
@@ -58,11 +73,17 @@ FIXED_ADDED_VALUE_IDS = {
 
 # Project Type values (case-insensitive, exact match) that are excluded
 # from the dashboard entirely — media buys/labor, not agency burn.
+# (Expense types are also caught more broadly below, regardless of exact
+# label, so "media: expense" here is a belt-and-suspenders duplicate.)
 EXCLUDE_TYPES = {
     "media: expense",
     "media: labor",
     "media: management fee",
 }
+
+# Project numbers containing this are internal/admin/overhead rows, not
+# client-billable projects — e.g. "26-UCMC-999" style numbering.
+ADMIN_ID_MARKER = "999"
 
 
 def forward_fill_campaign(rows, header):
@@ -128,11 +149,26 @@ def classify(proj_num, proj_type, status):
     if proj_num in FIXED_ADDED_VALUE_IDS:
         return "added_value"
 
+    proj_num_key = proj_num or ""
     type_key = (proj_type or "").strip().lower()
+    status_key = (status or "").strip().lower()
+
+    # Admin/overhead project numbers.
+    if ADMIN_ID_MARKER in proj_num_key:
+        return "exclude"
+
+    # Any expense-only row, regardless of exact type label.
+    if "expense" in type_key or status_key == "expenses only":
+        return "exclude"
+
+    # Opportunity/pipeline rows that aren't real, contracted work yet.
+    if "opportunity" in status_key or "oppty" in status_key \
+            or "opportunity" in type_key or "oppty" in type_key:
+        return "exclude"
+
     if type_key in EXCLUDE_TYPES:
         return "exclude"
 
-    status_key = (status or "").strip().lower()
     if "complete" in status_key:
         return "completed"
 
