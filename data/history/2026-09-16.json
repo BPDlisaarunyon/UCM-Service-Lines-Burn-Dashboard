@@ -14,20 +14,11 @@
       "addedValue": true
     },
     {
-      "id": "26-UCMC-035",
-      "name": "UChicago National Reputation Campaign - Conference Support",
-      "type": "Comms: Media Relations",
-      "status": "Complete/Expenses Pending",
-      "budget": 88000.0,
-      "lifecycle": "completed",
-      "addedValue": false
-    },
-    {
       "id": "26-UCMC-052",
       "name": "UChicago Service Lines - Analytics & Reporting",
       "type": "Media: Reporting",
       "status": "In Progress",
-      "budget": 341500.0,
+      "budget": 355000.0,
       "lifecycle": "active",
       "addedValue": false
     },
@@ -44,8 +35,8 @@
       "id": "26-UCMC-061",
       "name": "UChicago Service Lines - Market Assessment Tool Trial",
       "type": "Analytics: Reporting",
-      "status": "New / In Estimating",
-      "budget": 0.0,
+      "status": "In Progress",
+      "budget": 36000.0,
       "lifecycle": "active",
       "addedValue": true
     },
@@ -57,9 +48,18 @@
       "budget": 15000.0,
       "lifecycle": "active",
       "addedValue": true
+    },
+    {
+      "id": "26-UCMC-072",
+      "name": "UChicago Service Lines - Media Strategy & Innovation",
+      "type": "Media: Innovation",
+      "status": "In Progress",
+      "budget": 35000.0,
+      "lifecycle": "active",
+      "addedValue": false
     }
   ],
-  "excludedCount": 24,
-  "excludedBudget": 334660.0,
+  "excludedCount": 7,
+  "excludedBudget": 334000.0,
   "warnings": []
 }
