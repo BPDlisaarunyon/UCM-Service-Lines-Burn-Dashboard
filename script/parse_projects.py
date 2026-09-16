@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
-Parse the "All Projects" export into the JSON the burn-down dashboard reads.
+Parse the daily "Projects Report" export into the JSON the burn-down
+dashboard reads.
 
 Usage:
     python parse_projects.py <input.xlsx> <output.json>
@@ -9,24 +10,25 @@ How classification works
 -------------------------
 Business judgment (is a project real "burn" against the client budget, an
 added-value freebie, or excluded entirely as media/pipeline noise) is NOT
-inferred from the "Project Type" text. It comes from a "Dashboard Bucket"
-column that a human maintains directly in the source spreadsheet. That
-column is the single source of truth — this script just reads it.
+inferred from free-text alone. It's driven by two small, explicit rules
+maintained right here in this script:
 
-Add a column named exactly "Dashboard Bucket" to the export, with one of
-these values on every row that belongs to the target campaign:
+  1. FIXED_ADDED_VALUE_IDS — a fixed allowlist of project numbers that are
+     always "Added Value" (shown separately, excluded from the burn).
+     These don't change often; if BPD delivers a new added-value project,
+     add its project number to this set.
 
-    Active        -> counts against the budget, shown under Active Projects
-    Completed     -> counts against the budget, shown under Completed Projects
-    Added Value   -> shown in the Added Value section, EXCLUDED from the burn
-    Exclude       -> left off the dashboard entirely (media buys/labor,
-                     opportunity/proposal pipeline rows, zero-budget admin
-                     rows, etc.)
+  2. EXCLUDE_TYPES — any project whose "Project Type" exactly matches one
+     of these (case-insensitive) is left off the dashboard entirely, e.g.
+     media buys/labor that don't count as agency burn against this budget.
 
-Rows in the target campaign with a blank/unrecognized bucket are treated
-as excluded but are also collected into a "warnings" list in the output
-JSON, so the dashboard can surface a "N rows need classification" banner
-instead of silently dropping something that matters.
+Everything else in the target campaign counts as real burn: "Active" by
+default, or "Completed" if its status text contains "complete".
+
+This replaces the older "Dashboard Bucket" spreadsheet-column approach —
+the new report format doesn't include that column. If the classification
+rule ever needs to change (a new added-value project, a new type to
+exclude, etc.), update FIXED_ADDED_VALUE_IDS / EXCLUDE_TYPES below.
 """
 import sys
 import os
@@ -38,24 +40,28 @@ import openpyxl
 TARGET_CAMPAIGN = "2026 UCM Service Lines Campaigns"
 
 # Every run writes a dated snapshot here (in addition to overwriting the
-# root data.json), so the dashboard's version dropdown always has something
-# to point at even after this week's numbers get overwritten next week.
+# root data.json), so the dashboard's calendar picker always has something
+# to point at even after today's numbers get overwritten tomorrow.
 HISTORY_DIR = "data/history"
 
 # These stay fixed here because they're contract terms, not project data.
-# Move them into the spreadsheet too (e.g. a small "Config" sheet) if you'd
-# rather not edit this file when they change.
-TOTAL_BUDGET = 1865000
+TOTAL_BUDGET = 2131000
 SCOPE_END = "2027-06-30"
 
-BUCKET_MAP = {
-    "active": "active",
-    "completed": "completed",
-    "added value": "added_value",
-    "added-value": "added_value",
-    "addedvalue": "added_value",
-    "exclude": "exclude",
-    "excluded": "exclude",
+# Project numbers that are always "Added Value" — delivered outside the
+# client budget, shown separately, excluded from the burn calculation.
+FIXED_ADDED_VALUE_IDS = {
+    "26-UCMC-034",  # Media Transition & Campaign Builds
+    "26-UCMC-061",  # Market Assessment Tool Trial
+    "26-UCMC-066",  # Digestive Diseases and Transplant - Media Plan
+}
+
+# Project Type values (case-insensitive, exact match) that are excluded
+# from the dashboard entirely — media buys/labor, not agency burn.
+EXCLUDE_TYPES = {
+    "media: expense",
+    "media: labor",
+    "media: management fee",
 }
 
 
@@ -117,6 +123,22 @@ def write_history_and_manifest(out):
         json.dump({"versions": versions}, f, indent=2)
 
 
+def classify(proj_num, proj_type, status):
+    """Returns one of: 'active', 'completed', 'added_value', 'exclude'."""
+    if proj_num in FIXED_ADDED_VALUE_IDS:
+        return "added_value"
+
+    type_key = (proj_type or "").strip().lower()
+    if type_key in EXCLUDE_TYPES:
+        return "exclude"
+
+    status_key = (status or "").strip().lower()
+    if "complete" in status_key:
+        return "completed"
+
+    return "active"
+
+
 def main():
     if len(sys.argv) != 3:
         print("Usage: parse_projects.py <input.xlsx> <output.json>", file=sys.stderr)
@@ -126,18 +148,10 @@ def main():
 
     wb = openpyxl.load_workbook(in_path, data_only=True)
     ws = wb["Sheet1"]
+    # Row 1 is a report title ("Projects Report"), row 2 is the real header.
     rows = list(ws.iter_rows(min_row=2, values_only=True))
     header = list(rows[0])
     data_rows = rows[1:]
-
-    if "Dashboard Bucket" not in header:
-        print(
-            'ERROR: no "Dashboard Bucket" column found in the export. '
-            "Add one with values Active / Completed / Added Value / Exclude "
-            "before this script can run.",
-            file=sys.stderr,
-        )
-        sys.exit(2)
 
     filled = forward_fill_campaign(data_rows, header)
 
@@ -145,7 +159,6 @@ def main():
         return rec[header.index(name)] if name in header else None
 
     projects = []
-    warnings = []
     excluded_count = 0
     excluded_budget = 0.0
 
@@ -159,32 +172,25 @@ def main():
         if proj_num is None and proj_name is None:
             continue  # blank trailing row
 
-        raw_bucket = get(rec, "Dashboard Bucket")
-        bucket_key = (str(raw_bucket).strip().lower() if raw_bucket else "")
-        bucket = BUCKET_MAP.get(bucket_key)
+        proj_num = str(proj_num).strip()
+        proj_type = str(get(rec, "Project Type") or "").strip()
+        status = str(get(rec, "Project Status") or "").strip()
+        budget = float(get(rec, "Current Total Budget") or 0)
 
-        if bucket is None:
-            warnings.append(
-                f"{proj_num} ({proj_name}): missing/unrecognized Dashboard "
-                f"Bucket value ({raw_bucket!r}) — excluded until classified."
-            )
-            continue
+        bucket = classify(proj_num, proj_type, status)
 
         if bucket == "exclude":
             excluded_count += 1
-            excluded_budget += float(get(rec, "Current Total Budget") or 0)
+            excluded_budget += budget
             continue
 
-        created = get(rec, "Created Date")
         projects.append(
             {
-                "id": str(proj_num),
+                "id": proj_num,
                 "name": str(proj_name).strip() if proj_name else "",
-                "type": str(get(rec, "Project Type") or "").strip(),
-                "status": str(get(rec, "Project Status") or "").strip().title(),
-                "am": str(get(rec, "Account Manager") or "").strip(),
-                "budget": float(get(rec, "Current Total Budget") or 0),
-                "billed": float(get(rec, "Amount Billed") or 0),
+                "type": proj_type,
+                "status": status.title(),
+                "budget": budget,
                 "lifecycle": "completed" if bucket == "completed" else "active",
                 "addedValue": bucket == "added_value",
             }
@@ -198,7 +204,7 @@ def main():
         "projects": projects,
         "excludedCount": excluded_count,
         "excludedBudget": excluded_budget,
-        "warnings": warnings,
+        "warnings": [],
     }
 
     with open(out_path, "w") as f:
@@ -208,10 +214,6 @@ def main():
 
     print(f"Wrote {len(projects)} projects to {out_path}")
     print(f"Snapshotted this run to {HISTORY_DIR}/{out['lastUpdated']}.json and rebuilt manifest.json")
-    if warnings:
-        print(f"WARNING: {len(warnings)} row(s) need Dashboard Bucket classification:")
-        for w in warnings:
-            print("  -", w)
 
 
 if __name__ == "__main__":
