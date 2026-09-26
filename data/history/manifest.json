@@ -7,6 +7,12 @@
       "current": true
     },
     {
+      "id": "2026-09-26",
+      "label": "September 26, 2026",
+      "file": "data/history/2026-09-26.json",
+      "current": false
+    },
+    {
       "id": "2026-09-25",
       "label": "September 25, 2026",
       "file": "data/history/2026-09-25.json",
