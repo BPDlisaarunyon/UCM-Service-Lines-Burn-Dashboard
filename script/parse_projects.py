@@ -63,7 +63,7 @@ TARGET_CAMPAIGN = "2026 UCM Service Lines Campaigns"
 HISTORY_DIR = "data/history"
 
 # These stay fixed here because they're contract terms, not project data.
-TOTAL_BUDGET = 2131000
+TOTAL_BUDGET = 2071000
 SCOPE_END = "2027-06-30"
 
 # Project numbers that are always "Added Value" — delivered outside the
