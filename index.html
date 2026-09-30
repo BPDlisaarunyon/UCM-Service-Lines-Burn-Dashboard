@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>UCM Service Lines — Budget Burn Down</title>
+<title>UCM Service Lines — Investment Burn Down</title>
 <style>
   :root {
     color-scheme: light;
@@ -291,8 +291,8 @@
     document.getElementById('contentPad').innerHTML = `
       <div class="top-bar">
         <div class="titles">
-          <h1>UCM Service Lines — Client Budget Burn Down</h1>
-          <p class="sub">Campaign: <b id="campaignName">—</b> &nbsp;·&nbsp; Client: <b>UChicago Medicine (UCMC)</b></p>
+          <h1>UCM Service Lines — Investment Burn Down</h1>
+          <p class="sub">Campaign: <b id="campaignName">—</b> &nbsp;·&nbsp; UCM: <b>UChicago Medicine (UCMC)</b></p>
         </div>
         <div class="top-bar-actions">
           <button class="theme-toggle" id="themeToggle" type="button">Dark mode</button>
@@ -325,9 +325,9 @@
 
       <div class="tiles">
         <div class="tile">
-          <div class="label">Total Client Budget</div>
+          <div class="label">Total UCM Investment</div>
           <div class="value" id="tileTotal">$0</div>
-          <div class="note">Fixed scope budget</div>
+          <div class="note">Fixed scope investment</div>
         </div>
         <div class="tile accent">
           <div class="label">Allocated to Projects</div>
@@ -335,15 +335,15 @@
           <div class="note" id="tileAllocatedPct">0% of total</div>
         </div>
         <div class="tile">
-          <div class="label">Remaining Budget</div>
+          <div class="label">Remaining Investment</div>
           <div class="value" id="tileRemaining">$0</div>
           <div class="note" id="tileRemainingPct">0% of total</div>
         </div>
       </div>
 
       <div class="card">
-        <h2>Budget Burn Down</h2>
-        <p class="card-sub" id="meterSub">Allocated (sum of current project budgets) against the fixed client budget for this campaign.</p>
+        <h2>Investment Burn Down</h2>
+        <p class="card-sub" id="meterSub">Allocated (sum of current project investments) against the fixed UCM investment for this campaign.</p>
         <div class="meter-track">
           <div class="meter-fill" id="meterFill" style="width:0%"></div>
         </div>
@@ -359,11 +359,11 @@
 
       <div class="card">
         <div class="section-title-row"><h2>Active Projects</h2><span class="count-chip" id="activeCount">0</span></div>
-        <p class="card-sub">In-progress and on-hold projects currently drawing against the budget.</p>
+        <p class="card-sub">In-progress and on-hold projects currently drawing against the investment.</p>
         <table>
           <thead><tr>
             <th>Project</th><th>Status</th><th>Type</th>
-            <th class="num">Budget</th>
+            <th class="num">Investment</th>
           </tr></thead>
           <tbody id="activeBody"></tbody>
         </table>
@@ -374,27 +374,27 @@
           <div class="av-tag" style="margin-bottom:0;">Added Value</div>
           <span class="count-chip" id="addedValueCount">0</span>
         </div>
-        <p class="card-sub" style="margin-bottom:14px;">Delivered outside the client budget — excluded from the burn-down calculation above.</p>
+        <p class="card-sub" style="margin-bottom:14px;">Delivered outside the UCM investment — excluded from the burn-down calculation above.</p>
         <div id="addedValueBody"></div>
         <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);font-size:13px;color:var(--text-secondary);">
-          Total value delivered at no cost to the budget: <b id="addedValueTotal" style="color:var(--series-1);">$0</b>
+          Total value delivered at no cost to the investment: <b id="addedValueTotal" style="color:var(--series-1);">$0</b>
         </div>
       </div>
 
       <div class="card">
         <div class="section-title-row"><h2>Completed Projects</h2><span class="count-chip" id="completedCount">0</span></div>
-        <p class="card-sub">Projects remain visible here after closing — their budget stays counted in the burn down.</p>
+        <p class="card-sub">Projects remain visible here after closing — their investment stays counted in the burn down.</p>
         <table>
           <thead><tr>
             <th>Project</th><th>Status</th><th>Type</th>
-            <th class="num">Budget</th>
+            <th class="num">Investment</th>
           </tr></thead>
           <tbody id="completedBody"></tbody>
         </table>
       </div>
 
       <div class="card foot-card footnote">
-        <b>Scope of this dashboard:</b> pulls only the campaign named above from the daily Projects Report export, using each project's Current Total Budget. Which bucket a project falls into — Active, Completed, Added Value, or excluded entirely (media buys/labor, zero-budget admin rows) — is set by rules built into the dashboard's update script, based on project type and ID. <span id="excludedNote"></span>
+        <b>Scope of this dashboard:</b> pulls only the campaign named above from the daily Projects Report export, using each project's Current Total Budget. Which bucket a project falls into — Active, Completed, Added Value, or excluded entirely (media buys/labor, zero-investment admin rows) — is set by rules built into the dashboard's update script, based on project type and ID. <span id="excludedNote"></span>
         <br><br>
         <b>This dashboard updates itself:</b> the daily Projects Report export is routed by Zapier into this repository, a GitHub Action re-reads it and rebuilds <code>data.json</code>, and this page re-fetches that file on every load. Nothing here needs manual edits.
       </div>
@@ -466,7 +466,7 @@
     if (remaining <= 0) {
       paceBadge.textContent = 'Fully Allocated';
       paceBadge.className = 'pace-badge good';
-      paceText.textContent = 'The full client budget has been allocated to projects.';
+      paceText.textContent = 'The full UCM investment has been allocated to projects.';
     } else if (daysRemaining <= 0) {
       paceBadge.textContent = 'Scope Ended';
       paceBadge.className = 'pace-badge serious';
@@ -474,7 +474,7 @@
     } else {
       paceBadge.textContent = 'On Track';
       paceBadge.className = 'pace-badge good';
-      paceText.textContent = `${fmt$(remaining)} remains unallocated with ${daysRemaining.toLocaleString()} days left in scope — plan new project budgets against this runway.`;
+      paceText.textContent = `${fmt$(remaining)} remains unallocated with ${daysRemaining.toLocaleString()} days left in scope — plan new project investments against this runway.`;
     }
 
     document.getElementById('activeCount').textContent = active.length;
@@ -497,7 +497,7 @@
             </div>
             <div style="text-align:right;">
               <div style="font-size:20px;font-weight:700;color:var(--series-1);">${fmt$(p.budget)}</div>
-              <div style="font-size:11px;color:var(--text-muted);">not counted against budget</div>
+              <div style="font-size:11px;color:var(--text-muted);">not counted against investment</div>
             </div>
           </div>`).join('')
       : '<div class="empty-note">No added-value items.</div>';
