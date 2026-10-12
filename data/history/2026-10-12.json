@@ -1,0 +1,65 @@
+{
+  "campaign": "2026 UCM Service Lines Campaigns",
+  "totalBudget": 2071000,
+  "scopeEnd": "2027-06-30",
+  "lastUpdated": "2026-10-12",
+  "projects": [
+    {
+      "id": "26-UCMC-034",
+      "name": "UChicago Service Lines - Media Transition & Campaign Builds",
+      "type": "Media: Labor",
+      "status": "Complete/Expenses Pending",
+      "budget": 108770.0,
+      "lifecycle": "active",
+      "addedValue": true
+    },
+    {
+      "id": "26-UCMC-052",
+      "name": "UChicago Service Lines - Analytics & Reporting",
+      "type": "Media: Reporting",
+      "status": "In Progress",
+      "budget": 355000.0,
+      "lifecycle": "active",
+      "addedValue": false
+    },
+    {
+      "id": "26-UCMC-058",
+      "name": "UChicago Service Lines - Account Oversight & Advisory",
+      "type": "Oversight: Account",
+      "status": "In Progress",
+      "budget": 154200.0,
+      "lifecycle": "active",
+      "addedValue": false
+    },
+    {
+      "id": "26-UCMC-061",
+      "name": "UChicago Service Lines - Market Assessment Tool Trial",
+      "type": "Analytics: Reporting",
+      "status": "In Progress",
+      "budget": 36000.0,
+      "lifecycle": "active",
+      "addedValue": true
+    },
+    {
+      "id": "26-UCMC-066",
+      "name": "UChicago Service Lines - Digestive Diseases and Transplant - Media Plan",
+      "type": "Media: Planning",
+      "status": "In Progress",
+      "budget": 15000.0,
+      "lifecycle": "active",
+      "addedValue": true
+    },
+    {
+      "id": "26-UCMC-072",
+      "name": "UChicago Service Lines - Media Strategy & Innovation",
+      "type": "Media: Innovation",
+      "status": "In Progress",
+      "budget": 115000.0,
+      "lifecycle": "active",
+      "addedValue": false
+    }
+  ],
+  "excludedCount": 7,
+  "excludedBudget": 221030.6,
+  "warnings": []
+}
